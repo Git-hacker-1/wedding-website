@@ -83,8 +83,8 @@ export function HomePage() {
             <Link
               to="/rsvp"
               className={cn(
-                buttonVariants({ variant:"link", size: 'lg' }),
-                'text-white'
+                buttonVariants({ variant:"link", size: 'xl' }),
+                'text-white text-2xl font-semibold'
               )}
             >
             RSVP by {formatRsvpByDate(rsvpByDate)}

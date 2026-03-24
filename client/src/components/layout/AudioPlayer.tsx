@@ -151,7 +151,7 @@ export function AudioPlayer() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              className="fixed bottom-35 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm sm:w-auto sm:max-w-none pointer-events-auto"
+              className="fixed bottom-25 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm sm:w-auto sm:max-w-none pointer-events-auto"
             >
             <div className="bg-ocean-deep/95 backdrop-blur-md border border-white/10 text-white px-5 py-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-3">
