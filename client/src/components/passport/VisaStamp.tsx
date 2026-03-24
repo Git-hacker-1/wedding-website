@@ -7,6 +7,7 @@ import { BARAAT_ELEPHANT_STAMP_CIRCLES, BARAAT_ELEPHANT_STAMP_PATHS } from '@/co
 import { HALDI_LOTUS_STAMP_PATH } from '@/components/passport/haldiLotusStampPath';
 import { MEHNDI_HAND_STAMP_PATHS } from '@/components/passport/mehndiHandStampPaths';
 import { RECEPTION_DANCE_PARTY_STAMP_PATH } from '@/components/passport/receptionDancePartyStampPath';
+import { WELCOME_DINNER_STAMP_SHAPES } from '@/components/passport/welcomeDinnerStampShapes';
 
 // Generate a stable random-ish rotation based on a seed string
 function seededRotation(seed: string): number {
@@ -24,6 +25,8 @@ interface VisaStampProps {
   animated?: boolean;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  /** Seeded slight rotation + tilted entrance; use on passport scatter. Off for flat layouts (e.g. Events page). */
+  passportTilt?: boolean;
 }
 
 const stampConfigs: Record<EventType, {
@@ -37,12 +40,24 @@ const stampConfigs: Record<EventType, {
     color: '#2E8B8B',
     borderStyle: 'circle',
     icon: (
-      <g fill="currentColor" stroke="none" transform="translate(50,50) scale(0.11) translate(-256,-256)">
-        {/* bonfire-svgrepo-com.svg — exact paths scaled from 512 to 100 */}
-        <path d="M366.223,470.454L157.66,410.735c-13.469-3.86-26.734,1.141-29.609,11.203c-2.875,10.047,5.719,21.328,19.188,25.188l208.547,59.719c13.484,3.859,26.734-1.156,29.609-11.203S379.691,474.313,366.223,470.454z" />
-        <path d="M353.441,406.657l-91.563,26.219l84.156,24.094l20.188-5.781c13.469-3.844,21.531-16.953,18.016-29.25C380.707,409.642,366.941,402.797,353.441,406.657z" />
-        <path d="M144.91,466.376c-13.484,3.859-21.563,16.969-18.031,29.266s17.313,19.141,30.781,15.281l92.734-26.563l-84.156-24.078L144.91,466.376z" />
-        <path d="M256.004,412.11c69.688,0,126.156-56.469,126.156-126.141c0-15.219-2.719-30.828-7.656-44.313c-4.172-13.453-9.875-27.344-15.484-38.297c-10.828-20.984-15.953-51.109-7.438-81.125c-12.875-2.688-26.438,6.734-25.984,22.406c0.453,16.063-10.469,30.563-25.531,25.531c-16.125-5.375-9.922-18.703,2.234-34.203c22.844-29.109-1.078-63.375-24.172-75.375c9.375,22.969-4.188,49.313-21.516,44.469c-19.266-5.359-19.266-27.766-2.234-44.781c24.406-24.438,1.797-43.703,4.922-60.281c-11.203,2.234-16.484,14-16.063,24.094c0.891,21.953-15.719,23.109-27.438,35.859c-13.844,15.109-19.109,34.313-8.922,53.625c21.516,40.766,10.109,62.469-11.828,57.531c-14.844-3.328-18.047-33.141-5.953-43.953c-21.844-0.844-33.734,19.719-33.578,50.234c0.094,16.547-7.047,39.797-17.406,63.578c-5.328,13.984-8.266,29.141-8.266,45C129.848,355.641,186.332,412.11,256.004,412.11z M203.066,226.329c14.063,6.016,12.047,16.047,11.047,27.109c-0.453,5.031,2,10.531,5.531,12.281c2.406,1.844,6.063,2.391,9.344,2.391c8,0,14.484-6.484,14.484-14.5c0-2.547-0.719-4.906-1.875-6.984c-4.391-10.016-12.156-19.344-0.375-39.375c10.031-17.063,10.031-32.125,10.031-32.125s25.094,15.063,13.063,38.141c-6.266,12-4.859,20.906,0.578,26.266c3.203,3.859,7.984,6.359,13.391,6.359c1.625,0,3.141-0.281,4.625-0.688c0.672-0.109,1.297-0.313,1.906-0.594c0.156-0.063,0.313-0.125,0.469-0.188c0.094-0.047,0.188-0.094,0.266-0.141c6.031-2.781,10.234-8.828,10.234-15.891c0-2.422-0.484-4.734-1.375-6.844c0-0.141,0.016-0.25,0.016-0.25s34.609,19.078,34.609,85.578c0,40.328-32.703,73.031-73.031,73.031s-73.031-32.703-73.031-73.031C182.973,274.516,203.066,235.36,203.066,226.329z" />
+      <g transform="translate(50,50) scale(0.11) translate(-256,-256)">
+        {/* valentines-dinner-svgrepo-com.svg — per-path fills; fork uses mint fill + stroke outline */}
+        {WELCOME_DINNER_STAMP_SHAPES.map((shape, i) =>
+          shape.kind === 'path' ? (
+            <path
+              key={i}
+              d={shape.d}
+              fill={shape.fill}
+              stroke={shape.stroke}
+              strokeWidth={shape.strokeWidth}
+              strokeLinejoin={shape.strokeLinejoin}
+              strokeLinecap={shape.strokeLinecap}
+              {...(shape.fillRule !== undefined ? { fillRule: shape.fillRule } : {})}
+            />
+          ) : (
+            <polygon key={i} points={shape.points} fill={shape.fill} />
+          ),
+        )}
       </g>
     ),
   },
@@ -164,12 +179,13 @@ export function VisaStamp({
   date, 
   animated = true, 
   size = 'md',
-  className 
+  className,
+  passportTilt = true,
 }: VisaStampProps) {
   const config = stampConfigs[event];
   const id = useId();
   const safeId = id.replace(/:/g, '');
-  const randomRotation = seededRotation(id + event);
+  const randomRotation = passportTilt ? seededRotation(id + event) : 0;
   const useCurvedText = config.borderStyle === 'circle' || config.borderStyle === 'oval';
 
   const StampContent = (
@@ -280,7 +296,11 @@ export function VisaStamp({
   if (animated) {
     return (
       <motion.div
-        initial={{ scale: 2, opacity: 0, rotate: -15 }}
+        initial={
+          passportTilt
+            ? { scale: 2, opacity: 0, rotate: -15 }
+            : { scale: 1.04, opacity: 0, rotate: 0 }
+        }
         animate={{ scale: 1, opacity: 0.85, rotate: randomRotation }}
         transition={{
           type: 'spring',
@@ -295,7 +315,12 @@ export function VisaStamp({
   }
 
   return (
-    <div style={{ transform: `rotate(${randomRotation}deg)`, opacity: 0.85 }}>
+    <div
+      style={{
+        opacity: 0.85,
+        ...(passportTilt ? { transform: `rotate(${randomRotation}deg)` } : {}),
+      }}
+    >
       {StampContent}
     </div>
   );

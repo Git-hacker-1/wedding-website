@@ -272,6 +272,7 @@ export function EventsPage() {
                         event={stampThemeToEventType[event.stampTheme]}
                         date={event.date.split(', ')[1].replace(', 2027', '')}
                         size="lg"
+                        passportTilt={false}
                       />
                     </div>
 
