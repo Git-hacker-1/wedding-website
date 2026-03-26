@@ -186,6 +186,9 @@ export const rsvpApi = {
 
   submit: (data: GroupRsvpPayload) =>
     api.post('/rsvp', data).then((res) => res.data),
+
+  getGroup: (groupId: string) =>
+    api.get<LookupGroupDto>(`/rsvp/group/${encodeURIComponent(groupId)}`).then((res) => res.data),
 };
 
 export const adminApi = {

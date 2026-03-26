@@ -46,6 +46,13 @@ const guestUpdateSchema = z.object({
   mailingAddress: mailingAddressSchema,
 });
 
+export const rsvpGroupParamsSchema = z.object({
+  groupId: z
+    .string()
+    .length(24, 'groupId must be a valid id')
+    .regex(/^[a-f0-9]+$/i, 'groupId must be a valid id'),
+});
+
 export const submitRsvpSchema = z.object({
   groupId: z.string().min(1, 'groupId is required'),
   guests: z
@@ -55,4 +62,5 @@ export const submitRsvpSchema = z.object({
 });
 
 export type LookupQuery = z.infer<typeof lookupQuerySchema>;
+export type RsvpGroupParams = z.infer<typeof rsvpGroupParamsSchema>;
 export type SubmitRsvpBody = z.infer<typeof submitRsvpSchema>;

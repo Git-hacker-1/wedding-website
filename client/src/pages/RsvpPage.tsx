@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Section } from '@/components/passport/PassportPage';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { useGuest } from '@/contexts/GuestContext';
 import { RSVP_BACKGROUND_PHOTO } from '@/lib/constants';
 import { OceanBackground } from '@/components/layout/OceanBackground';
 import { HeroSection } from '@/components/home/HeroSection';
-import { Search, Check, X, PartyPopper, Music, HelpCircle, Hotel, ExternalLink, AlertCircle, Eye, Mail, MapPin, Gift, BookOpen } from 'lucide-react';
+import { Search, Check, X, PartyPopper, Music, HelpCircle, Hotel, ExternalLink, AlertCircle, Eye, Mail, MapPin, Gift, BookOpen, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Analytics } from '@/utils/analytics';
@@ -178,6 +178,7 @@ export function RsvpPage() {
   const [confirmationEmail, setConfirmationEmail] = useState('');
 
   const group = guestContext.group;
+  const setGroup = guestContext.setGroup;
 
   useEffect(() => {
     if (group && step === 'form') {
@@ -376,6 +377,22 @@ export function RsvpPage() {
     guestContext.setGroup(null);
   };
 
+  const handleEditMyRsvp = useCallback(async () => {
+    if (!group) return;
+    setIsLoading(true);
+    setError('');
+    try {
+      const fresh = await rsvpApi.getGroup(group._id);
+      setGroup(fresh);
+      setGuestFormState(fresh.guests.map(guestToFormState));
+      setStep('form');
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [group, setGroup]);
+
   if (group && step === 'lookup') {
     return (
       <RsvpLayout>
@@ -386,11 +403,24 @@ export function RsvpPage() {
                 <p className="text-ocean-deep mb-4">
                   Welcome back, {guestContext.displayName}!
                 </p>
+                {error && (
+                  <div className="flex items-start gap-2 text-coral text-sm bg-coral/5 border border-coral/20 rounded-lg p-3 mb-4 text-left max-w-md mx-auto">
+                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-4 justify-center">
-                  <Button onClick={() => { setStep('form'); setGuestFormState(group.guests.map(guestToFormState)); }} variant="gold">
-                    Edit my RSVP
+                  <Button onClick={handleEditMyRsvp} variant="gold" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden />
+                        Loading…
+                      </>
+                    ) : (
+                      'Edit my RSVP'
+                    )}
                   </Button>
-                  <Button variant="outline" onClick={startOver}>
+                  <Button variant="outline" onClick={startOver} disabled={isLoading}>
                     RSVP for someone else
                   </Button>
                 </div>

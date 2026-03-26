@@ -57,7 +57,7 @@ function toMailingAddressDto(o: unknown): LookupGuestDto['mailingAddress'] {
   };
 }
 
-function guestToDto(o: Record<string, unknown>): LookupGuestDto {
+export function guestToDto(o: Record<string, unknown>): LookupGuestDto {
   const dto: LookupGuestDto = {
     _id: String(o._id),
     firstName: (o.firstName as string) ?? '',
@@ -147,6 +147,46 @@ export const lookupByName = async (req: Request, res: Response): Promise<void> =
   } catch (error) {
     log.error({ err: error, path: '/api/rsvp/lookup' }, 'Lookup error');
     res.status(500).json({ error: 'Failed to lookup guest' });
+  }
+};
+
+/**
+ * GET /api/rsvp/group/:groupId
+ * Returns one group with all guests (same guest shape as lookup). Public; groupId is an opaque id.
+ */
+export const getGroupById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const groupId = req.params.groupId!;
+    if (!mongoose.Types.ObjectId.isValid(groupId)) {
+      res.status(404).json({ error: 'Group not found' });
+      return;
+    }
+    const groupObjectId = new mongoose.Types.ObjectId(groupId);
+    const groupDoc = await Group.findById(groupObjectId).lean();
+    if (!groupDoc) {
+      res.status(404).json({ error: 'Group not found' });
+      return;
+    }
+    const guests = await Guest.find({ groupId: groupObjectId }).sort({ createdAt: 1 }).lean();
+    const gRow = groupDoc as { _id: mongoose.Types.ObjectId; name?: string };
+    const result: LookupGroupDto = {
+      _id: String(gRow._id),
+      name: gRow.name,
+      guests: guests.map((guest) => guestToDto(guest as Record<string, unknown>)),
+    };
+
+    enrichWideEvent(res, {
+      business: {
+        operation: 'rsvp_get_group',
+        guest_count: result.guests.length,
+        group_count: 1,
+      },
+    });
+
+    res.json(result);
+  } catch (error) {
+    log.error({ err: error, path: '/api/rsvp/group/:groupId' }, 'Get RSVP group error');
+    res.status(500).json({ error: 'Failed to load group' });
   }
 };
 
