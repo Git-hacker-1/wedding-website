@@ -17,9 +17,9 @@ interface Photo {
 
 // Placeholder photos - these would be replaced with actual photos
 const photoCategories = [
-  { id: 'engagement', name: 'Engagement', icon: Heart },
-  { id: 'couple', name: 'Our Journey', icon: Camera },
   { id: 'lovedones', name: 'Loved Ones', icon: Users },
+  { id: 'couple', name: 'Treasured Moments', icon: Camera },
+  { id: 'engagement', name: 'Engagement', icon: Heart },
   { id: 'guest', name: 'Guest Uploads', icon: Upload },
 ] as const;
 
@@ -29,8 +29,11 @@ const placeholderPhotos: Photo[] = [
   { id: '2', src: '/images/the-family.avif', alt: 'Family', category: 'lovedones' },
   { id: '3', src: '/images/cosmo.avif', alt: 'Cosmo', category: 'lovedones' },
   { id: '4', src: '/images/best-friends.avif', alt: 'Best Friends', category: 'lovedones' },
-  { id: '5', src: '', alt: 'Engagement', category: 'engagement' },
-  { id: '6', src: '', alt: 'Our Journey', category: 'couple' },
+  { id: '5', src: '/images/coldplay.avif', alt: 'Coldplay with Laura', category: 'lovedones' },
+  { id: '6', src: '/images/cousins.avif', alt: 'Cousins', category: 'lovedones' },
+  { id: '7', src: '/images/day-at-the-beach.avif', alt: 'Day at the Beach', category: 'couple' },
+  { id: '8', src: '/images/skiing.avif', alt: 'Skiing', category: 'couple' },
+  { id: '9', src: '', alt: 'Our Journey', category: 'couple' },
  
 ];
 
