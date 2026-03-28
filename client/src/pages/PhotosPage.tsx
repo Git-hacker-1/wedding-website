@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PassportPage, PageHeader, Section } from '@/components/passport/PassportPage';
@@ -89,20 +89,39 @@ export function PhotosPage() {
     setLightboxPhoto(null);
   };
 
-  useEffect(() => {
-    if (lightboxPhoto) {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
-    }
-  }, [lightboxPhoto]);
-
-  const navigateLightbox = (direction: 'prev' | 'next') => {
+  const navigateLightbox = useCallback((direction: 'prev' | 'next') => {
     const newIndex = direction === 'prev' 
       ? (lightboxIndex - 1 + filteredPhotos.length) % filteredPhotos.length
       : (lightboxIndex + 1) % filteredPhotos.length;
     setLightboxIndex(newIndex);
     setLightboxPhoto(filteredPhotos[newIndex] ?? null);
-  };
+  }, [lightboxIndex, filteredPhotos]);
+
+  useEffect(() => {
+    if (!lightboxPhoto) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'Escape':
+          closeLightbox();
+          break;
+        case 'ArrowLeft':
+          navigateLightbox('prev');
+          break;
+        case 'ArrowRight':
+          navigateLightbox('next');
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [lightboxPhoto, navigateLightbox]);
 
   return (
     <>
