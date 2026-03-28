@@ -52,6 +52,12 @@ const photos: Photo[] = [
   { id: '28', src: '/images/Laura.avif', alt: 'Laura and Grace', category: 'lovedones' },
   {id: '29', src: '/images/autumn.avif', alt: 'Autumn and Grace', category: 'lovedones' },
   {id: '30', src: '/images/childhood-friends.avif', alt: 'Once upon a time', category: 'lovedones' },
+  {id: '31', src: '/images/thefamily.avif', alt: 'The Family', category: 'lovedones' },
+  {id: '32', src: '/images/swimming-with-bapuji.avif', alt: 'At the pool with Bapuji', category: 'lovedones' },
+  {id: '33', src: '/images/bao-liana-young.avif', alt: 'young friends', category: 'lovedones' },
+  {id: '34', src: '/images/friends.avif', alt: 'Friends', category: 'lovedones' },
+  {id: '35', src: '/images/the-half.avif', alt: 'Half marathon with liana', category: 'lovedones' },
+  {id: '36', src: '/images/the-three-musketeers.avif', alt: 'The Three Musketeers', category: 'lovedones' },
 ];
 
 export function PhotosPage() {
