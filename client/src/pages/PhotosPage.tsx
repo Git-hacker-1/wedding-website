@@ -49,6 +49,9 @@ const photos: Photo[] = [
   { id: '25', src: '/images/hershey.avif', alt: 'Hershey Park', category: 'lovedones' },
   { id: '26', src: '/images/theBoys.avif', alt: 'The Boys', category: 'lovedones' },
   { id: '27', src: '/images/grandparents.avif', alt: 'Grandparents', category: 'lovedones' },
+  { id: '28', src: '/images/Laura.avif', alt: 'Laura and Grace', category: 'lovedones' },
+  {id: '29', src: '/images/autumn.avif', alt: 'Autumn and Grace', category: 'lovedones' },
+  {id: '30', src: '/images/childhood-friends.avif', alt: 'Once upon a time', category: 'lovedones' },
 ];
 
 export function PhotosPage() {
