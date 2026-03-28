@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PassportPage, PageHeader, Section } from '@/components/passport/PassportPage';
@@ -13,18 +13,16 @@ interface Photo {
   id: string;
   src: string;
   alt: string;
-  category: 'couple' | 'cosmo' | 'lovedones' | 'guest';
+  category: 'couple' | 'lovedones' | 'guest';
 }
 
-// Placeholder photos - these would be replaced with actual photos
 const photoCategories = [
   { id: 'lovedones', name: 'Loved Ones', icon: Users },
   { id: 'couple', name: 'Treasured Moments', icon: Camera },
   { id: 'guest', name: 'Guest Uploads', icon: Upload },
 ] as const;
 
-// Placeholder image URLs (using gradient placeholders)
-const placeholderPhotos: Photo[] = [
+const photos: Photo[] = [
   { id: '1', src: '/images/the-parents.avif', alt: 'Parents', category: 'lovedones' },
   { id: '2', src: '/images/the-family.avif', alt: 'Family', category: 'lovedones' },
   { id: '3', src: '/images/cosmo.avif', alt: 'Cosmo', category: 'lovedones' },
@@ -38,47 +36,27 @@ const placeholderPhotos: Photo[] = [
   { id: '12', src: '/images/birthday.avif', alt: 'Birthday Party', category: 'lovedones' },
   { id: '13', src: '/images/pottery.avif', alt: 'Pottery together', category: 'couple' },
   { id: '14', src: '/images/snorkeling.avif', alt: 'Snorkeling', category: 'couple' },
-  {id: '15', src: '/images/antelope-canyon.avif', alt: 'Antelope Canyon', category: 'couple' },
-  {id: '16', src: '/images/arizona.avif', alt: 'Arizona', category: 'couple' },
-  {id: '17', src: '/images/elephant.avif', alt: 'Elephant', category: 'couple' },
-  {id: '18', src: '/images/halloween.avif', alt: 'Halloween', category: 'couple' },
-  {id: '19', src: '/images/new-york.avif', alt: 'New York', category: 'couple' },
-  {id: '20', src: '/images/pizza.avif', alt: 'Pizza', category: 'couple' },
-  {id: '21', src: '/images/spa-day.avif', alt: 'Spa Day', category: 'couple' },
-  {id: '22', src: '/images/night-spa-swim.avif', alt: 'Night Spa Swim', category: 'couple' },
- 
+  { id: '15', src: '/images/antelope-canyon.avif', alt: 'Antelope Canyon', category: 'couple' },
+  { id: '16', src: '/images/arizona.avif', alt: 'Arizona', category: 'couple' },
+  { id: '17', src: '/images/elephant.avif', alt: 'Elephant', category: 'couple' },
+  { id: '18', src: '/images/halloween.avif', alt: 'Halloween', category: 'couple' },
+  { id: '19', src: '/images/new-york.avif', alt: 'New York', category: 'couple' },
+  { id: '20', src: '/images/pizza.avif', alt: 'Pizza', category: 'couple' },
+  { id: '21', src: '/images/spa-day.avif', alt: 'Spa Day', category: 'couple' },
+  { id: '22', src: '/images/night-spa-swim.avif', alt: 'Night Spa Swim', category: 'couple' },
 ];
-
-function PhotoPlaceholder({ index }: { index: number }) {
-  const gradients = [
-    'from-ocean-deep to-ocean-caribbean',
-    'from-ocean-caribbean to-ocean-sky',
-    'from-sand-warm to-sand-driftwood',
-    'from-coral to-gold',
-    'from-ocean-sky to-sand-pearl',
-    'from-gold to-sand-warm',
-  ];
-  
-  return (
-    <div 
-      className={`w-full h-full bg-linear-to-br ${gradients[index % gradients.length]} flex items-center justify-center`}
-    >
-      <div className="text-center text-white/80">
-        <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
-        <p className="text-sm font-medium">Photo Coming Soon</p>
-      </div>
-    </div>
-  );
-}
 
 export function PhotosPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const filteredPhotos = selectedCategory === 'all' 
-    ? placeholderPhotos 
-    : placeholderPhotos.filter(p => p.category === selectedCategory);
+  const filteredPhotos = useMemo(
+    () => selectedCategory === 'all'
+      ? photos
+      : photos.filter(p => p.category === selectedCategory),
+    [selectedCategory],
+  );
 
   const openLightbox = (photo: Photo, index: number) => {
     setLightboxPhoto(photo);
@@ -171,25 +149,26 @@ export function PhotosPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
+                role="button"
+                tabIndex={0}
                 className="aspect-square cursor-pointer group"
                 onClick={() => openLightbox(photo, index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openLightbox(photo, index);
+                  }
+                }}
               >
                 <Card className="h-full overflow-hidden">
                   <CardContent className="p-0 h-full relative">
-                    {photo.src ? (
-                      <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        width={400}
-                        height={400}
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                    ) : (
-                      <PhotoPlaceholder index={index} />
-                    )}
+                    <img
+                      src={photo.src}
+                      alt={photo.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
                     <div className="absolute inset-0 bg-ocean-deep/0 group-hover:bg-ocean-deep/30 transition-colors duration-300 flex items-center justify-center">
                       <Heart className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
@@ -209,8 +188,6 @@ export function PhotosPage() {
         >
           <Card className="bg-linear-to-r from-ocean-deep to-ocean-caribbean text-white overflow-hidden">
             <CardContent className="p-8 md:p-12 text-center relative">
-            
-              
               <div className="relative z-10">
                 <Camera className="w-16 h-16 mx-auto mb-4 opacity-80" />
                 <h3 className="text-2xl md:text-3xl font-heading mb-4">
@@ -244,9 +221,6 @@ export function PhotosPage() {
                     </a>
                   </Button>
                 </div>
-                {/* <p className="text-sm text-sand-pearl/70 mt-4">
-                  Use hashtag <span className="font-semibold">#SagarAndGrace2027</span> on social media
-                </p> */}
               </div>
             </CardContent>
           </Card>
