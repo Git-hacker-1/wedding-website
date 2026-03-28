@@ -298,16 +298,20 @@ export function VisaStamp({
       <motion.div
         initial={
           passportTilt
-            ? { scale: 2, opacity: 0, rotate: -15 }
-            : { scale: 1.04, opacity: 0, rotate: 0 }
+            ? { scale: 4, opacity: 0, rotate: randomRotation + 45 }
+            : { scale: 1.5, opacity: 0, rotate: 0 }
         }
-        animate={{ scale: 1, opacity: 0.85, rotate: randomRotation }}
-        transition={{
-          type: 'spring',
-          stiffness: 300,
-          damping: 20,
+        animate={{ 
+          scale: [passportTilt ? 4 : 1.5, 0.9, 1], 
+          opacity: [0, 1, 0.85], 
+          rotate: [passportTilt ? randomRotation + 45 : 0, randomRotation, randomRotation] 
         }}
-        whileHover={{ scale: 1.05, opacity: 1 }}
+        transition={{
+          duration: 0.5,
+          times: [0, 0.7, 1],
+          ease: "easeOut"
+        }}
+        whileHover={{ scale: 1.05, opacity: 1, filter: 'contrast(1.2)' }}
       >
         {StampContent}
       </motion.div>
@@ -366,14 +370,14 @@ const scatteredContainerVariants = {
 
 /** Framer Motion variants for individual stamps (stamp-down spring). */
 const stampDownVariants = {
-  hidden: { scale: 2.5, opacity: 0 },
+  hidden: { scale: 4, opacity: 0 },
   visible: {
-    scale: 1,
-    opacity: 0.92,
+    scale: [4, 0.9, 1],
+    opacity: [0, 1, 0.92],
     transition: {
-      type: 'spring' as const,
-      stiffness: 400,
-      damping: 22,
+      duration: 0.5,
+      times: [0, 0.7, 1],
+      ease: "easeOut",
     },
   },
 };

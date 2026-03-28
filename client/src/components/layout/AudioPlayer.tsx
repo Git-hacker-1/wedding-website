@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Music, AlertCircle } from 'lucide-react';
+import { VolumeX, Music, AlertCircle } from 'lucide-react';
 
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -181,13 +181,13 @@ export function AudioPlayer() {
                   <button
                     onClick={handlePromptClick}
                     disabled={!isLoaded}
-                    className="flex-[3] sm:flex-initial px-5 py-2 bg-gold text-ocean-deep rounded-full text-sm font-semibold hover:bg-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-3 sm:flex-initial px-5 py-2 bg-gold text-ocean-deep rounded-full text-sm font-semibold hover:bg-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoaded ? 'Play' : 'Loading...'}
                   </button>
                   <button
                     onClick={dismissPrompt}
-                    className="flex-[2] sm:flex-initial px-4 py-2 bg-white/10 text-white/80 rounded-full text-sm font-medium hover:bg-white/20 transition-colors"
+                    className="flex-2 sm:flex-initial px-4 py-2 bg-white/10 text-white/80 rounded-full text-sm font-medium hover:bg-white/20 transition-colors"
                   >
                     No thanks
                   </button>
@@ -216,7 +216,21 @@ export function AudioPlayer() {
           aria-label={isPlaying ? 'Mute music' : 'Play music'}
         >
           {isPlaying ? (
-            <Volume2 className="w-5 h-5" />
+            <div className="flex items-end justify-center gap-[2px] w-5 h-5">
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="w-[3px] bg-white rounded-t-sm"
+                  animate={{ height: ['40%', '100%', '30%', '80%', '40%'] }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.15,
+                  }}
+                />
+              ))}
+            </div>
           ) : (
             <VolumeX className="w-5 h-5" />
           )}

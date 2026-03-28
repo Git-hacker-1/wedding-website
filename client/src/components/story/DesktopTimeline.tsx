@@ -117,25 +117,34 @@ export function DesktopTimeline({ events }: DesktopTimelineProps) {
                     rotate: rotation - 5,
                   }}
                   whileInView={{ opacity: 1, y: 0, rotate: rotation }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    rotate: rotation === 0 ? 2 : 0, 
+                    zIndex: 20 
+                  }}
                   viewport={{ once: true, margin: '-20px' }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className="shrink-0"
+                  className="shrink-0 group z-10"
                 >
-                  <div className="bg-sand-pearl px-4 pt-4 pb-12 shadow-lg rounded-sm hover:shadow-xl transition-shadow">
-                    <div className="w-72 h-72 bg-sand-warm/50 flex items-center justify-center border border-sand-driftwood/20 overflow-hidden">
+                  <div className="bg-sand-pearl px-4 pt-4 pb-12 shadow-lg rounded-sm hover:shadow-2xl transition-all duration-300">
+                    <div className="w-72 h-72 bg-sand-warm/50 flex items-center justify-center border border-sand-driftwood/20 overflow-hidden relative">
                       {event.image ? (
-                        <img
-                          src={event.image}
-                          alt={event.title}
-                          width={288}
-                          height={288}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover"
-                        />
+                        <>
+                          <img
+                            src={event.image}
+                            alt={event.title}
+                            width={288}
+                            height={288}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          {/* Glossy overlay */}
+                          <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay" />
+                        </>
                       ) : (
-                        <div className="text-center text-sand-dark/50">
-                          <Heart className="w-12 h-12 mx-auto mb-1" />
+                        <div className="text-center text-sand-dark/50 z-10">
+                          <Heart className="w-12 h-12 mx-auto mb-1 group-hover:scale-110 transition-transform duration-300" />
                           <p className="text-sm">Photo {index + 1}</p>
                         </div>
                       )}

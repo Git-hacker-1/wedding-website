@@ -102,28 +102,34 @@ export function MobileTimeline({ events }: MobileTimelineProps) {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="mt-4">
-                          <div className="bg-sand-pearl px-3 pt-3 pb-8 shadow-md rounded-sm">
-                            <div className="w-full aspect-square bg-sand-warm/50 flex items-center justify-center border border-sand-driftwood/20 overflow-hidden">
+                        <motion.div 
+                          className="mt-4 group z-10 w-full"
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          <div className="bg-sand-pearl px-3 pt-3 pb-8 shadow-md rounded-sm hover:shadow-xl transition-all duration-300">
+                            <div className="w-full aspect-square bg-sand-warm/50 flex items-center justify-center border border-sand-driftwood/20 overflow-hidden relative">
                               {event.image ? (
-                                <img
-                                  src={event.image}
-                                  alt={event.title}
-                                  width={288}
-                                  height={288}
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="w-full h-full object-cover"
-                                />
+                                <>
+                                  <img
+                                    src={event.image}
+                                    alt={event.title}
+                                    width={288}
+                                    height={288}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                  />
+                                  <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay" />
+                                </>
                               ) : (
-                                <div className="text-center text-sand-dark/50">
-                                  <Heart className="w-8 h-8 mx-auto mb-1" />
+                                <div className="text-center text-sand-dark/50 z-10">
+                                  <Heart className="w-8 h-8 mx-auto mb-1 group-hover:scale-110 transition-transform duration-300" />
                                   <p className="text-xs">Photo {index + 1}</p>
                                 </div>
                               )}
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>

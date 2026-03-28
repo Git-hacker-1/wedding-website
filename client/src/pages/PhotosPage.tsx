@@ -155,44 +155,55 @@ export function PhotosPage() {
         {/* Photo Grid */}
         <motion.div 
           layout
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6 pb-8"
         >
           <AnimatePresence mode="popLayout">
-            {filteredPhotos.map((photo, index) => (
-              <motion.div
-                key={photo.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                role="button"
-                tabIndex={0}
-                className="aspect-square cursor-pointer group"
-                onClick={() => openLightbox(photo, index)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openLightbox(photo, index);
-                  }
-                }}
-              >
-                <Card className="h-full overflow-hidden">
-                  <CardContent className="p-0 h-full relative">
-                    <img
-                      src={photo.src}
-                      alt={photo.alt}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-ocean-deep/0 group-hover:bg-ocean-deep/30 transition-colors duration-300 flex items-center justify-center">
-                      <Heart className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {filteredPhotos.map((photo, index) => {
+              const rotation = (index % 3 === 0 ? -2 : index % 3 === 1 ? 2 : -1.5) + (index % 5 === 0 ? 1 : 0);
+              return (
+                <motion.div
+                  key={photo.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  role="button"
+                  tabIndex={0}
+                  className="break-inside-avoid relative cursor-pointer group outline-none"
+                  onClick={() => openLightbox(photo, index)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openLightbox(photo, index);
+                    }
+                  }}
+                >
+                  {/* Polaroid Frame */}
+                  <div 
+                    className="bg-sand-pearl p-3 pb-10 shadow-md rounded-sm hover:shadow-2xl transition-all duration-500 relative z-0 group-hover:z-20 group-hover:-translate-y-2 group-focus-visible:ring-4 ring-ocean-caribbean"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                  >
+                    <div className="w-full bg-sand-warm/30 overflow-hidden relative">
+                      <img
+                        src={photo.src}
+                        alt={photo.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                      {/* Glossy overlay */}
+                      <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay" />
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    
+                    {/* Hover Heart Icon */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-ocean-caribbean/0 group-hover:text-ocean-caribbean transition-colors duration-300">
+                      <Heart className="w-5 h-5 fill-current opacity-70" />
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
 

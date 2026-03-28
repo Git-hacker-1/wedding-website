@@ -15,6 +15,7 @@ import { Search, Check, X, PartyPopper, Music, HelpCircle, Hotel, ExternalLink, 
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Analytics } from '@/utils/analytics';
+import { VisaStamp } from '@/components/passport/VisaStamp';
 
 /** Link for guests to book their room (same as Travel page). */
 const BOOK_ROOM_URL = 'https://www.indiandestinationwedding.com/grace-sagar/';
@@ -107,6 +108,23 @@ function guestToFormState(g: LookupGuestDto): GuestFormState {
   };
 }
 
+const BoardingPassWrapper = ({ children, stubText = "BOARDING PASS", hideStub = false }: { children: React.ReactNode, stubText?: string, hideStub?: boolean }) => (
+  <div className="relative overflow-hidden shadow-passport rounded-xl bg-sand-pearl w-full flex flex-col md:flex-row max-w-4xl mx-auto">
+    {/* Decorative corner cutouts */}
+    <div className="absolute top-0 right-0 md:right-32 w-4 h-4 rounded-full bg-ocean-dark/10 -mt-2 -mr-2 shadow-inner" />
+    <div className="absolute bottom-0 right-0 md:right-32 w-4 h-4 rounded-full bg-ocean-dark/10 -mb-2 -mr-2 shadow-inner" />
+    <div className="flex-1 z-10 w-full">{children}</div>
+    {!hideStub && (
+      <div className="hidden md:flex flex-col w-32 relative border-l-[3px] border-dashed border-sand-driftwood/40 bg-sand-light items-center py-6 z-10">
+        <div className="transform rotate-90 text-ocean-deep/50 tracking-[0.3em] font-heading text-lg whitespace-nowrap mt-24">
+          {stubText}
+        </div>
+        <div className="w-10 h-32 opacity-20 mt-auto mb-4" style={{ backgroundImage: 'repeating-linear-gradient(0deg, #1E3A5F, #1E3A5F 2px, transparent 2px, transparent 4px, #1E3A5F 4px, #1E3A5F 5px, transparent 5px, transparent 8px)' }} />
+      </div>
+    )}
+  </div>
+);
+
 function RsvpLayout({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -150,7 +168,7 @@ function RsvpLayout({ children }: { children: React.ReactNode }) {
 
       {/* ── Section 2: RSVP form on ocean background ── */}
       <div id={RSVP_FORM_SECTION_ID} className="relative min-h-screen pt-12 pb-16 overflow-hidden">
-        <OceanBackground variant="deep" />
+        <OceanBackground variant="deep" positioning="fixed" />
         <motion.div
           className="relative z-10"
           initial={{ opacity: 0, y: 20 }}
@@ -444,14 +462,15 @@ export function RsvpPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Find Your Invitation</CardTitle>
-                    <CardDescription>
-                      Enter your first and last name to RSVP
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                <BoardingPassWrapper stubText="TICKET">
+                  <Card className="border-0 shadow-none bg-transparent">
+                    <CardHeader className="text-center">
+                      <CardTitle className="text-2xl">Find Your Invitation</CardTitle>
+                      <CardDescription>
+                        Enter your first and last name to RSVP
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
                     <form onSubmit={handleLookup} className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -504,7 +523,8 @@ export function RsvpPage() {
                       </p>
                     </div>
                   </CardContent>
-                </Card>
+                  </Card>
+                </BoardingPassWrapper>
               </motion.div>
             )}
 
@@ -515,14 +535,15 @@ export function RsvpPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Which group?</CardTitle>
-                    <CardDescription>
-                      We found more than one match. Select your group.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
+                <BoardingPassWrapper stubText="SELECT">
+                  <Card className="border-0 shadow-none bg-transparent">
+                    <CardHeader className="text-center">
+                      <CardTitle className="text-2xl">Which group?</CardTitle>
+                      <CardDescription>
+                        We found more than one match. Select your group.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
                     {lookupGroups.map((g) => (
                       <button
                         key={g._id}
@@ -542,7 +563,8 @@ export function RsvpPage() {
                       Back
                     </Button>
                   </CardContent>
-                </Card>
+                  </Card>
+                </BoardingPassWrapper>
               </motion.div>
             )}
 
@@ -554,14 +576,15 @@ export function RsvpPage() {
                 exit={{ opacity: 0, y: -20 }}
               >
                 {!rsvpOpen ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-2xl">RSVP has closed</CardTitle>
-                      <CardDescription>
-                        {rsvpByDate ? `The RSVP deadline was ${rsvpByDate}.` : ''} Here is your current response.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
+                  <BoardingPassWrapper stubText="CHECK-IN">
+                    <Card className="border-0 shadow-none bg-transparent">
+                      <CardHeader>
+                        <CardTitle className="text-2xl">RSVP has closed</CardTitle>
+                        <CardDescription>
+                          {rsvpByDate ? `The RSVP deadline was ${rsvpByDate}.` : ''} Here is your current response.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
                       {group.guests.map((g) => (
                         <div key={g._id} className="p-4 border border-sand-driftwood/20 rounded-lg">
                           <p className="font-medium text-ocean-deep">
@@ -584,13 +607,15 @@ export function RsvpPage() {
                           )}
                         </div>
                       ))}
-                      <Button variant="outline" onClick={startOver}>Look up another name</Button>
-                    </CardContent>
-                  </Card>
+                        <Button variant="outline" onClick={startOver}>Look up another name</Button>
+                      </CardContent>
+                    </Card>
+                  </BoardingPassWrapper>
                 ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-2xl">
+                  <BoardingPassWrapper stubText="CHECK-IN">
+                    <Card className="border-0 shadow-none bg-transparent">
+                      <CardHeader>
+                        <CardTitle className="text-2xl">
                         {group.name || `${guestFormState.map((s) => s.firstName).filter(Boolean).join(' & ')}'s party`}
                       </CardTitle>
                       <CardDescription>
@@ -931,7 +956,8 @@ export function RsvpPage() {
                         </Button>
                       </div>
                     </CardContent>
-                  </Card>
+                    </Card>
+                  </BoardingPassWrapper>
                 )}
               </motion.div>
             )}
@@ -943,15 +969,16 @@ export function RsvpPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Review Your RSVP</CardTitle>
-                    <CardDescription>
-                      Please confirm everything looks correct before submitting.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {guestFormState.map((state) => {
+                <BoardingPassWrapper stubText="CONFIRM">
+                  <Card className="border-0 shadow-none bg-transparent">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">Review Your RSVP</CardTitle>
+                      <CardDescription>
+                        Please confirm everything looks correct before submitting.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {guestFormState.map((state) => {
                       const guest = group.guests.find((g) => g._id === state.guestId);
                       if (!guest) return null;
                       const isAttending = state.attending === true || state.attending === 'maybe';
@@ -1020,11 +1047,17 @@ export function RsvpPage() {
                         className="flex-1"
                         variant="gold"
                       >
-                        {isLoading ? 'Submitting...' : 'Confirm & Submit'}
+                        {isLoading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Checking In...
+                          </span>
+                        ) : 'Confirm & Submit'}
                       </Button>
                     </div>
                   </CardContent>
-                </Card>
+                  </Card>
+                </BoardingPassWrapper>
               </motion.div>
             )}
 
@@ -1035,22 +1068,51 @@ export function RsvpPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', bounce: 0.5 }}
-                      className="mb-6"
-                    >
-                      <PartyPopper className="w-16 h-16 mx-auto text-gold" />
-                    </motion.div>
-                    <h2 className="text-3xl font-heading text-ocean-deep mb-4">
+                <BoardingPassWrapper stubText="APPROVED">
+                  <Card className="border-0 shadow-none bg-transparent">
+                    <CardContent className="py-12 text-center">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', bounce: 0.5 }}
+                        className="mb-6"
+                      >
+                        <PartyPopper className="w-16 h-16 mx-auto text-gold" />
+                      </motion.div>
+                      <h2 className="text-3xl font-heading text-ocean-deep mb-4">
                       We've received your RSVP!
                     </h2>
                     <p className="text-sand-dark mb-6">
                       Thank you for responding. We're so excited to celebrate with you.
                     </p>
+
+                    {/* Passport Stamp Reveals based on RSVP'd events */}
+                    {(() => {
+                      const allEvents = Array.from(new Set(guestFormState.flatMap(g => g.events)));
+                      if (allEvents.length === 0) return null;
+                      return (
+                        <div className="flex flex-wrap items-center justify-center gap-4 my-8 relative min-h-[140px]">
+                           {allEvents.slice(0, 4).map((eventId, i) => (
+                              <motion.div
+                                key={eventId}
+                                className="absolute"
+                                initial={{ scale: 3, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 0.9, rotate: (i % 2 === 0 ? 1 : -1) * (10 + i * 5) }}
+                                transition={{ type: 'spring', delay: i * 0.4 + 0.5, bounce: 0.4 }}
+                                style={{ 
+                                  left: `calc(50% + ${(i - Math.min(allEvents.length - 1, 3)/2) * 60}px)`, 
+                                  top: `${Math.abs((i % 2) - 0.5) * 20}px`, 
+                                  zIndex: i,
+                                  transform: 'translateX(-50%)'
+                                }}
+                              >
+                                 <VisaStamp event={eventId as EventType} date="APR 2027" size="sm" animated={false} />
+                              </motion.div>
+                           ))}
+                        </div>
+                      );
+                    })()}
+
                     {confirmationEmail && (
                       <p className="text-sm text-sand-dark mb-6">
                         If you provided an email, we&apos;ll send a confirmation to {confirmationEmail} shortly.
@@ -1077,7 +1139,8 @@ export function RsvpPage() {
                       </Link>
                     </div>
                   </CardContent>
-                </Card>
+                  </Card>
+                </BoardingPassWrapper>
               </motion.div>
             )}
           </AnimatePresence>

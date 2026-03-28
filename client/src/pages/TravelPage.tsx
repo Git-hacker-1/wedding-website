@@ -15,9 +15,7 @@ import {
   ExternalLink,
   MapPin
 } from 'lucide-react';
-
-const RESORT_MAPS_URL = 'https://maps.google.com/?q=Dreams+Playa+Mujeres+Golf+%26+Spa+Resort,+Playa+Mujeres,+Cancun,+Mexico';
-const RESORT_MAPS_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3717.8!2d-86.8175!3d21.2589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f4c2c8b1c8b1c8b%3A0x8f4c2c8b1c8b1c8b!2sDreams+Playa+Mujeres+Golf+%26+Spa+Resort!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus';
+import { InteractiveMap } from '@/components/travel/InteractiveMap';
 
 const CHECKLIST_STORAGE_KEY = 'wedding-packing-checklist';
 
@@ -135,14 +133,14 @@ export function TravelPage() {
                 }}
               />
               {/* Fallback gradient shown if image fails to load */}
-              <div className="hidden absolute inset-0 bg-gradient-to-br from-ocean-deep via-ocean-caribbean to-ocean-sky flex items-center justify-center">
+              <div className="hidden absolute inset-0 bg-linear-to-br from-ocean-deep via-ocean-caribbean to-ocean-sky items-center justify-center data-[fallback=true]:flex">
                 <div className="text-center text-white/80">
                   <Hotel className="w-16 h-16 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Add resort image to public/images/</p>
                 </div>
               </div>
               {/* Gradient overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep/90 via-ocean-deep/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-ocean-deep/90 via-ocean-deep/40 to-transparent" />
               {/* Resort name overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                 <h2 className="text-3xl md:text-4xl font-heading text-white mb-1">
@@ -155,7 +153,7 @@ export function TravelPage() {
             </div>
             
             {/* Resort Info */}
-            <div className="bg-gradient-to-r from-ocean-deep to-ocean-caribbean text-sand-pearl p-6 md:p-8">
+            <div className="bg-linear-to-r from-ocean-deep to-ocean-caribbean text-sand-pearl p-6 md:p-8">
               <p className="text-sand-pearl/70 mb-4">
                 Playa Mujeres, Cancun, Mexico
               </p>
@@ -166,7 +164,7 @@ export function TravelPage() {
               <div className="flex flex-wrap gap-4">
                 <Button variant="gold" size="lg" asChild>
                   <a href="https://www.indiandestinationwedding.com/grace-sagar/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center whitespace-nowrap">
-                    Book Your Room <ExternalLink className="w-4 h-4 ml-2 flex-shrink-0" />
+                    Book Your Room <ExternalLink className="w-4 h-4 ml-2 shrink-0" />
                   </a>
                 </Button>
                
@@ -293,35 +291,13 @@ export function TravelPage() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="text-2xl md:text-3xl font-heading text-center text-ocean-deep mb-6">
-            <MapPin className="w-6 h-6 inline-block mr-2 mb-1" />
-            Location
-          </h2>
-          <Card className="overflow-hidden">
-            <div className="aspect-video w-full">
-              <iframe
-                src={RESORT_MAPS_EMBED_URL}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Dreams Playa Mujeres Resort - Map"
-              />
-            </div>
-            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="font-medium text-ocean-deep">Dreams Playa Mujeres Golf & Spa Resort</p>
-                <p className="text-sm text-sand-dark">Playa Mujeres, Cancun, Quintana Roo, Mexico</p>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <a href={RESORT_MAPS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center whitespace-nowrap">
-                  Open in Google Maps <ExternalLink className="w-3.5 h-3.5 ml-1.5 shrink-0" />
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center justify-center gap-3 mb-6">
+            <h2 className="text-2xl md:text-3xl font-heading text-center text-ocean-deep">
+              <MapPin className="w-6 h-6 inline-block mr-2 mb-1 text-gold" />
+              Location & Transport
+            </h2>
+          </div>
+          <InteractiveMap />
         </motion.div>
 
         {/* Packing List */}
