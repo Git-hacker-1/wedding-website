@@ -14,6 +14,7 @@ import { loggers } from './utils/logger.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { wideEventMiddleware, wideEventErrorMiddleware } from './middleware/wideEvent.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { guestIdentityMiddleware } from './middleware/guestIdentity.js';
 import { shutdownPostHog } from './utils/posthog.js';
 
 const log = loggers.app;
@@ -55,6 +56,7 @@ const PORT = process.env.PORT ?? 5001;
 
 // Middleware
 app.use(requestIdMiddleware);
+app.use(guestIdentityMiddleware);
 app.use(wideEventMiddleware);
 app.use(cors({
   origin: getAllowedOrigins(),

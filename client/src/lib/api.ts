@@ -8,10 +8,24 @@ const api = axios.create({
   },
 });
 
+const GUEST_STORAGE_KEY = 'wedding_rsvp_guest';
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('adminToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  try {
+    const raw = localStorage.getItem(GUEST_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { _id?: string };
+      if (parsed._id) {
+        config.headers['X-Guest-Group-Id'] = parsed._id;
+      }
+    }
+  } catch {
+    // storage or parse failure — skip header
   }
 
   Sentry.addBreadcrumb({

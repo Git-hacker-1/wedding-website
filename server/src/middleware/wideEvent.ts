@@ -122,6 +122,10 @@ export function wideEventErrorMiddleware(
       if (wideEvent.error?.category) {
         scope.setTag("error_category", wideEvent.error.category);
       }
+
+      if (req.guestGroupId) {
+        scope.setTag("guest_group_id", req.guestGroupId);
+      }
     });
   }
 

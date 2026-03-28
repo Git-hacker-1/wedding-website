@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { loggers, enrichWideEvent } from "../utils/logger.js";
-import { captureAnonymousEvent } from "../utils/posthog.js";
+import { captureAnonymousEvent, captureEvent } from "../utils/posthog.js";
 
 interface HttpError extends Error {
   statusCode?: number;
@@ -43,7 +43,7 @@ export const errorHandler: ErrorRequestHandler = (
     },
   });
 
-  captureAnonymousEvent("api_error", {
+  const errorProps = {
     path: req.path,
     method: req.method,
     status_code: statusCode,
@@ -51,7 +51,13 @@ export const errorHandler: ErrorRequestHandler = (
     error_message: err.message,
     is_server_error: isServerError,
     request_id: req.requestId,
-  });
+  };
+
+  if (req.guestGroupId) {
+    captureEvent(req.guestGroupId, "api_error", errorProps);
+  } else {
+    captureAnonymousEvent("api_error", errorProps);
+  }
 
   const sentryEventId = res.sentry;
   const isDevelopment = process.env.NODE_ENV !== "production";
