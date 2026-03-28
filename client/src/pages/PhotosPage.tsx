@@ -12,14 +12,13 @@ interface Photo {
   id: string;
   src: string;
   alt: string;
-  category: 'engagement' | 'couple' | 'cosmo' | 'lovedones' | 'guest';
+  category: 'couple' | 'cosmo' | 'lovedones' | 'guest';
 }
 
 // Placeholder photos - these would be replaced with actual photos
 const photoCategories = [
   { id: 'lovedones', name: 'Loved Ones', icon: Users },
   { id: 'couple', name: 'Treasured Moments', icon: Camera },
-  { id: 'engagement', name: 'Engagement', icon: Heart },
   { id: 'guest', name: 'Guest Uploads', icon: Upload },
 ] as const;
 
@@ -33,7 +32,11 @@ const placeholderPhotos: Photo[] = [
   { id: '6', src: '/images/cousins.avif', alt: 'Cousins', category: 'lovedones' },
   { id: '7', src: '/images/day-at-the-beach.avif', alt: 'Day at the Beach', category: 'couple' },
   { id: '8', src: '/images/skiing.avif', alt: 'Skiing', category: 'couple' },
-  { id: '9', src: '', alt: 'Our Journey', category: 'couple' },
+  { id: '10', src: '/images/jasons-wedding.avif', alt: 'Graces family', category: 'lovedones' },
+  { id: '11', src: '/images/foam-party.avif', alt: 'Foam Party', category: 'lovedones' },
+  { id: '12', src: '/images/birthday.avif', alt: 'Birthday Party', category: 'lovedones' },
+  { id: '13', src: '/images/pottery.avif', alt: 'Pottery together', category: 'couple' },
+  { id: '14', src: '/images/snorkeling.avif', alt: 'Snorkeling', category: 'couple' },
  
 ];
 
