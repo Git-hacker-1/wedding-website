@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PassportPage, PageHeader, Section } from '@/components/passport/PassportPage';
 import { NextPageCTA } from '@/components/layout/NextPageCTA';
@@ -37,6 +38,14 @@ const placeholderPhotos: Photo[] = [
   { id: '12', src: '/images/birthday.avif', alt: 'Birthday Party', category: 'lovedones' },
   { id: '13', src: '/images/pottery.avif', alt: 'Pottery together', category: 'couple' },
   { id: '14', src: '/images/snorkeling.avif', alt: 'Snorkeling', category: 'couple' },
+  {id: '15', src: '/images/antelope-canyon.avif', alt: 'Antelope Canyon', category: 'couple' },
+  {id: '16', src: '/images/arizona.avif', alt: 'Arizona', category: 'couple' },
+  {id: '17', src: '/images/elephant.avif', alt: 'Elephant', category: 'couple' },
+  {id: '18', src: '/images/halloween.avif', alt: 'Halloween', category: 'couple' },
+  {id: '19', src: '/images/new-york.avif', alt: 'New York', category: 'couple' },
+  {id: '20', src: '/images/pizza.avif', alt: 'Pizza', category: 'couple' },
+  {id: '21', src: '/images/spa-day.avif', alt: 'Spa Day', category: 'couple' },
+  {id: '22', src: '/images/night-spa-swim.avif', alt: 'Night Spa Swim', category: 'couple' },
  
 ];
 
@@ -80,6 +89,13 @@ export function PhotosPage() {
     setLightboxPhoto(null);
   };
 
+  useEffect(() => {
+    if (lightboxPhoto) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [lightboxPhoto]);
+
   const navigateLightbox = (direction: 'prev' | 'next') => {
     const newIndex = direction === 'prev' 
       ? (lightboxIndex - 1 + filteredPhotos.length) % filteredPhotos.length
@@ -89,6 +105,7 @@ export function PhotosPage() {
   };
 
   return (
+    <>
     <PassportPage pageNumber={8}>
       <PageHeader
         title="Photo Gallery"
@@ -222,74 +239,76 @@ export function PhotosPage() {
         />
       </Section>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxPhoto && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-            onClick={closeLightbox}
-          >
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white hover:text-sand-pearl transition-colors z-10"
-              aria-label="Close lightbox"
-            >
-              <X className="w-8 h-8" />
-            </button>
-
-            <button
-              onClick={(e) => { e.stopPropagation(); navigateLightbox('prev'); }}
-              className="absolute left-4 text-white hover:text-sand-pearl transition-colors z-10"
-              aria-label="Previous photo"
-            >
-              <ChevronLeft className="w-10 h-10" />
-            </button>
-
-            <button
-              onClick={(e) => { e.stopPropagation(); navigateLightbox('next'); }}
-              className="absolute right-4 text-white hover:text-sand-pearl transition-colors z-10"
-              aria-label="Next photo"
-            >
-              <ChevronRight className="w-10 h-10" />
-            </button>
-
-            <motion.div
-              key={lightboxPhoto.id}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="max-w-4xl max-h-[80vh] w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {lightboxPhoto.src ? (
-                <img
-                  src={lightboxPhoto.src}
-                  alt={lightboxPhoto.alt}
-                  width={1200}
-                  height={800}
-                  sizes="(max-width: 896px) 100vw, 896px"
-                  decoding="async"
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              ) : (
-                <div className="aspect-video bg-linear-to-br from-ocean-deep to-ocean-caribbean rounded-lg flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <Camera className="w-20 h-20 mx-auto mb-4 opacity-50" />
-                    <p className="text-xl font-heading">Photo Coming Soon</p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-
-            <div className="absolute bottom-4 text-white text-sm">
-              {lightboxIndex + 1} / {filteredPhotos.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </PassportPage>
+
+      {/* Lightbox — portaled to document.body to escape ancestor transforms that break fixed positioning */}
+      {createPortal(
+        <AnimatePresence>
+          {lightboxPhoto && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+              onClick={closeLightbox}
+            >
+              <button
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 text-white hover:text-sand-pearl transition-colors z-10"
+                aria-label="Close lightbox"
+              >
+                <X className="w-8 h-8" />
+              </button>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); navigateLightbox('prev'); }}
+                className="absolute left-4 text-white hover:text-sand-pearl transition-colors z-10"
+                aria-label="Previous photo"
+              >
+                <ChevronLeft className="w-10 h-10" />
+              </button>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); navigateLightbox('next'); }}
+                className="absolute right-4 text-white hover:text-sand-pearl transition-colors z-10"
+                aria-label="Next photo"
+              >
+                <ChevronRight className="w-10 h-10" />
+              </button>
+
+              <motion.div
+                key={lightboxPhoto.id}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="flex items-center justify-center mx-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {lightboxPhoto.src ? (
+                  <img
+                    src={lightboxPhoto.src}
+                    alt={lightboxPhoto.alt}
+                    decoding="async"
+                    className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                  />
+                ) : (
+                  <div className="aspect-video max-w-4xl w-full bg-linear-to-br from-ocean-deep to-ocean-caribbean rounded-lg flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <Camera className="w-20 h-20 mx-auto mb-4 opacity-50" />
+                      <p className="text-xl font-heading">Photo Coming Soon</p>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+
+              <div className="absolute bottom-4 text-white text-sm">
+                {lightboxIndex + 1} / {filteredPhotos.length}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
+    </>
   );
 }
