@@ -4,7 +4,7 @@ import { PassportPage, PageHeader, Section } from '@/components/passport/Passpor
 import { NextPageCTA } from '@/components/layout/NextPageCTA';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, Heart, X, ChevronLeft, ChevronRight, ExternalLink, ImageIcon, Upload } from 'lucide-react';
+import { Camera, Heart, X, ChevronLeft, ChevronRight, ExternalLink, ImageIcon, Upload, Users } from 'lucide-react';
 
 const GOOGLE_PHOTOS_ALBUM_URL = 'https://photos.app.goo.gl/bAu9CCMBZ6sw4LQH6';
 
@@ -12,28 +12,26 @@ interface Photo {
   id: string;
   src: string;
   alt: string;
-  category: 'engagement' | 'couple' | 'venue' | 'guest';
+  category: 'engagement' | 'couple' | 'cosmo' | 'lovedones' | 'guest';
 }
 
 // Placeholder photos - these would be replaced with actual photos
 const photoCategories = [
   { id: 'engagement', name: 'Engagement', icon: Heart },
   { id: 'couple', name: 'Our Journey', icon: Camera },
-  { id: 'venue', name: 'Venue', icon: Camera },
+  { id: 'lovedones', name: 'Loved Ones', icon: Users },
   { id: 'guest', name: 'Guest Uploads', icon: Upload },
 ] as const;
 
 // Placeholder image URLs (using gradient placeholders)
 const placeholderPhotos: Photo[] = [
-  { id: '1', src: '', alt: 'Engagement photo 1', category: 'engagement' },
-  { id: '2', src: '', alt: 'Engagement photo 2', category: 'engagement' },
-  { id: '3', src: '', alt: 'Engagement photo 3', category: 'engagement' },
-  { id: '4', src: '', alt: 'Couple photo 1', category: 'couple' },
-  { id: '5', src: '', alt: 'Couple photo 2', category: 'couple' },
-  { id: '6', src: '', alt: 'Couple photo 3', category: 'couple' },
-  { id: '7', src: '', alt: 'Venue photo 1', category: 'venue' },
-  { id: '8', src: '', alt: 'Venue photo 2', category: 'venue' },
-  { id: '9', src: '', alt: 'Venue photo 3', category: 'venue' },
+  { id: '1', src: '/images/the-parents.avif', alt: 'Parents', category: 'lovedones' },
+  { id: '2', src: '/images/the-family.avif', alt: 'Family', category: 'lovedones' },
+  { id: '3', src: '/images/cosmo.avif', alt: 'Cosmo', category: 'lovedones' },
+  { id: '4', src: '/images/best-friends.avif', alt: 'Best Friends', category: 'lovedones' },
+  { id: '5', src: '', alt: 'Engagement', category: 'engagement' },
+  { id: '6', src: '', alt: 'Our Journey', category: 'couple' },
+ 
 ];
 
 function PhotoPlaceholder({ index }: { index: number }) {
@@ -48,7 +46,7 @@ function PhotoPlaceholder({ index }: { index: number }) {
   
   return (
     <div 
-      className={`w-full h-full bg-gradient-to-br ${gradients[index % gradients.length]} flex items-center justify-center`}
+      className={`w-full h-full bg-linear-to-br ${gradients[index % gradients.length]} flex items-center justify-center`}
     >
       <div className="text-center text-white/80">
         <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
@@ -167,7 +165,7 @@ export function PhotosPage() {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <Card className="bg-gradient-to-r from-ocean-deep to-ocean-caribbean text-white overflow-hidden">
+          <Card className="bg-linear-to-r from-ocean-deep to-ocean-caribbean text-white overflow-hidden">
             <CardContent className="p-8 md:p-12 text-center relative">
             
               
@@ -271,7 +269,7 @@ export function PhotosPage() {
                   className="w-full h-full object-contain rounded-lg"
                 />
               ) : (
-                <div className="aspect-video bg-gradient-to-br from-ocean-deep to-ocean-caribbean rounded-lg flex items-center justify-center">
+                <div className="aspect-video bg-linear-to-br from-ocean-deep to-ocean-caribbean rounded-lg flex items-center justify-center">
                   <div className="text-center text-white">
                     <Camera className="w-20 h-20 mx-auto mb-4 opacity-50" />
                     <p className="text-xl font-heading">Photo Coming Soon</p>
