@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useMemo, useEffect, useState } from 'react';
 
 // ── Color Palettes ──
 
@@ -108,7 +108,7 @@ function generateSchools(count: number, schoolSize: number) {
     id: i,
     fishCount: schoolSize - (i % 2),
     top: `${12 + (i * 22) % 65}%`,
-    direction: (i % 2 === 0 ? 'left' : 'right') as const,
+    direction: (i % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
     delay: i * 3,
     duration: 22 + (i % 4) * 3,
     opacity: 0.30 + (i % 3) * 0.05,
@@ -130,12 +130,12 @@ function generateFish(count: number, layer: FishLayer) {
     id: i,
     size: sizeBase + (i % 5) * sizeStep,
     top: `${8 + (i * 17) % 75}%`,
-    direction: (i % 2 === 0 ? 'left' : 'right') as const,
+    direction: (i % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
     delay: (i * 2.5) % 25,
     duration: durBase + (i % 5) * durStep,
     opacity: opBase + (i % 4) * opStep,
     paletteIndex: i % FISH_PALETTES.length,
-    fishType: (i % 6 < 3 ? 'regular' : i % 6 < 5 ? 'clown' : 'yellow') as const,
+    fishType: (i % 6 < 3 ? 'regular' : i % 6 < 5 ? 'clown' : 'yellow') as 'regular' | 'clown' | 'yellow',
   }));
 }
 
@@ -145,7 +145,7 @@ function generateTropical(count: number) {
     width: 58 + (i % 3) * 8,
     height: 38 + (i % 3) * 5,
     top: `${15 + i * 20}%`,
-    direction: (i % 2 === 0 ? 'left' : 'right') as const,
+    direction: (i % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
     delay: i * 5 + 2,
     duration: 28 + i * 4,
     opacity: 0.38 + (i % 3) * 0.04,
@@ -187,7 +187,7 @@ function generateTurtles(count: number) {
     id: i,
     size: 80 + (i % 2) * 12,
     top: `${22 + i * 28}%`,
-    direction: (i % 2 === 0 ? 'left' : 'right') as const,
+    direction: (i % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
     delay: i * 15 + 8,
     duration: 45 + i * 8,
     opacity: 0.40 + (i % 2) * 0.05,
@@ -266,6 +266,45 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
 
   const isDeep = variant === 'deep';
 
+  // ── Mouse Parallax Configuration ──
+  const [win, setWin] = useState({ w: 1000, h: 1000 });
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWin({ w: window.innerWidth, h: window.innerHeight });
+      const handleResize = () => setWin({ w: window.innerWidth, h: window.innerHeight });
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  const mouseX = useMotionValue(win.w / 2);
+  const mouseY = useMotionValue(win.h / 2);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  const smoothX = useSpring(mouseX, { damping: 50, stiffness: 400 });
+  const smoothY = useSpring(mouseY, { damping: 50, stiffness: 400 });
+
+  const bgX = useTransform(smoothX, [0, win.w], [10, -10]);
+  const bgY = useTransform(smoothY, [0, win.h], [10, -10]);
+
+  const floorX = useTransform(smoothX, [0, win.w], [15, -15]);
+  const floorY = useTransform(smoothY, [0, win.h], [5, -5]);
+
+  const midX = useTransform(smoothX, [0, win.w], [25, -25]);
+  const midY = useTransform(smoothY, [0, win.h], [25, -25]);
+
+  const fgX = useTransform(smoothX, [0, win.w], [45, -45]);
+  const fgY = useTransform(smoothY, [0, win.h], [45, -45]);
+
+
   return (
     <div className={`${positioning} inset-0 overflow-hidden pointer-events-none`}>
 
@@ -323,7 +362,7 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
       {/* ══════════════════════════════════════════
           BACKGROUND LAYER (z-0) — distant, slow
          ══════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0, willChange: 'transform' }}>
+      <motion.div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0, x: bgX, y: bgY, willChange: 'transform' }}>
         {/* Fish Schools (each school = 1 animated wrapper with static child fish) */}
         {schools.map((s) => (
           <motion.div
@@ -389,12 +428,12 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* ══════════════════════════════════════════
           OCEAN FLOOR (z-1) — coral, kelp, starfish
          ══════════════════════════════════════════ */}
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden" style={{ height: '280px', zIndex: 1 }}>
+      <motion.div className="absolute bottom-0 left-0 right-0 overflow-hidden" style={{ height: '280px', zIndex: 1, x: floorX, y: floorY, willChange: 'transform' }}>
         {/* Ocean floor gradient */}
         <div
           className="absolute bottom-0 left-0 right-0 h-full"
@@ -498,12 +537,12 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
             </svg>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* ══════════════════════════════════════════
           MIDGROUND LAYER (z-2) — main creatures
          ══════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 2, willChange: 'transform' }}>
+      <motion.div className="absolute inset-0 overflow-hidden" style={{ zIndex: 2, x: midX, y: midY, willChange: 'transform' }}>
         {/* Individual Fish (regular, clown, yellow variants) */}
         {midFish.map((f) => {
           const palette = FISH_PALETTES[f.paletteIndex] ?? FISH_PALETTES[0];
@@ -731,12 +770,12 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
             </svg>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* ══════════════════════════════════════════
           FOREGROUND LAYER (z-3) — close, fast
          ══════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 3, willChange: 'transform' }}>
+      <motion.div className="absolute inset-0 overflow-hidden" style={{ zIndex: 3, x: fgX, y: fgY, willChange: 'transform' }}>
         {/* Close-up Fish */}
         {fgFish.map((f) => {
           const palette = FISH_PALETTES[f.paletteIndex] ?? FISH_PALETTES[0];
@@ -834,10 +873,10 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
             transition={{ duration: b.duration, delay: b.delay, repeat: Infinity, ease: 'linear' }}
           />
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Floating Particles (all depths) ── */}
-      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 4 }}>
+      <motion.div className="absolute inset-0 overflow-hidden" style={{ zIndex: 4, x: fgX, y: fgY }}>
         {particles.map((p) => (
           <motion.div
             key={`particle-${p.id}`}
@@ -851,7 +890,7 @@ export function OceanBackground({ variant, positioning = 'absolute' }: OceanBack
             transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
           />
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Water Caustics Overlay ── */}
       <motion.div

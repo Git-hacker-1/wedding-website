@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { AudioPlayer } from '@/components/layout/AudioPlayer';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { CustomCursor } from '@/components/layout/CustomCursor';
 import { HomePage } from '@/pages/HomePage';
 import { OurStoryPage } from '@/pages/OurStoryPage';
 import { EventsPage } from '@/pages/EventsPage';
@@ -73,6 +74,7 @@ function App() {
     <BrowserRouter>
       <GuestProvider>
         <ScrollToTop />
+        <CustomCursor />
         <div className="min-h-screen flex flex-col">
           <Routes>
             <Route path="/admin" element={<AdminPage />} />
